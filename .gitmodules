@@ -1,0 +1,3 @@
+[submodule "MathEquations-component"]
+	path = MathEquations-component
+	url = https://github.com/brendena/MathEquations-component
