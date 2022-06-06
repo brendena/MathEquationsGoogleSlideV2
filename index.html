@@ -5,9 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>test</title>
 </head>
+<style>
+#bottomNav{
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  width:100vw;
+}
+
+</style>
 <body>
     <?!= include('Math_Equation_Component'); ?>
+    <?!= include('pngConverter'); ?>
     <p>testing this out<p/>
-    <math-equation-component></math-equation-component>
+    <math-equation-component id="mathComponent"></math-equation-component>
+    <div id="bottomNav">
+      <button id="grabImage">grab image</button>  
+    </div>
+    <script>
+
+      var error = function(error){
+        console.log(error)
+      }
+
+      //Grab image from slideshow and put it into component
+
+      document.getElementById("grabImage").addEventListener("click",function(){
+        console.log("-----------------------CLicked")
+         google.script.run.withSuccessHandler(function(results){
+            console.log(results);
+            let metaData = readMetadata(new Uint8Array(results));
+            console.log(metaData)
+        }).withFailureHandler(error).loadImage();
+      })
+
+
+      //take component out and put it into slideshow
+
+      const convert_blobToBase64String = async (blob) =>  {
+          const base64url = await new Promise((r) => {
+          const reader = new FileReader()
+          reader.onload = () => r(reader.result)
+          reader.readAsDataURL(blob);
+        })
+        return base64url;
+      }
+
+      document.getElementById("mathComponent").addEventListener("math-equation-gen-image",function(e){
+        console.log("got a event")
+        console.log(e)
+        console.log(e.detail)
+        
+        convert_blobToBase64String(e.detail).then(function(blobString){
+          console.log("got here-------------")
+          console.log(e)
+          google.script.run.withSuccessHandler(function(results){
+          }).withFailureHandler(error).addImage(blobString.split("base64,")[1]);
+        })
+      })
+
+    </script>
 </body>
 </html>
