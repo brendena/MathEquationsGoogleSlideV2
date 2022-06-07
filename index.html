@@ -6,12 +6,12 @@
     <title>test</title>
 </head>
 <style>
-#bottomNav{
-  position:fixed;
-  bottom:0px;
-  left:0px;
-  width:100vw;
-}
+  #bottomNav{
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    width:100vw;
+  }
 
 </style>
 <body>
@@ -20,23 +20,44 @@
     <p>testing this out<p/>
     <math-equation-component id="mathComponent"></math-equation-component>
     <div id="bottomNav">
-      <button id="grabImage">grab image</button>  
+      <button id="bindImage">bind image</button>  
     </div>
     <script>
+      /*Globals*/
+      let imageIdBind = ""
+      let imageBinded = false;
 
       var error = function(error){
+        console.log("[ERROR]----------------------------")
         console.log(error)
+        console.log("[End ERROR]----------------------------")
       }
 
       //Grab image from slideshow and put it into component
 
-      document.getElementById("grabImage").addEventListener("click",function(){
+      document.getElementById("bindImage").addEventListener("click",function(){
         console.log("-----------------------CLicked")
-         google.script.run.withSuccessHandler(function(results){
+
+        
+        let button = document.getElementById("bindImage");
+        let mathComponent = document.getElementById("mathComponent");
+
+        if(!imageBinded){
+          google.script.run.withSuccessHandler(function(results){
             console.log(results);
-            let metaData = readMetadata(new Uint8Array(results));
-            console.log(metaData)
-        }).withFailureHandler(error).loadImage();
+            imageIdBind = results["id"]
+            
+            imageBinded = !imageBinded;
+            button.innerText = "binded";
+
+          }).withFailureHandler(error).loadImage();
+        }
+        else
+        {
+          button.innerText = "bind image";
+        }
+
+        
       })
 
 
@@ -51,16 +72,21 @@
         return base64url;
       }
 
-      document.getElementById("mathComponent").addEventListener("math-equation-gen-image",function(e){
+      document.getElementById("mathComponent").addEventListener("math-equation-gen-image",function(mathData){
         console.log("got a event")
-        console.log(e)
-        console.log(e.detail)
+        console.log(mathData.detail)
         
-        convert_blobToBase64String(e.detail).then(function(blobString){
+        let imageBlob = mathData.detail.blob;
+        let imageData = mathData.detail.equationProps;
+
+        
+
+        convert_blobToBase64String(imageBlob).then(function(blobString){
+          console.log(blobString.split("base64,"))
           console.log("got here-------------")
-          console.log(e)
           google.script.run.withSuccessHandler(function(results){
-          }).withFailureHandler(error).addImage(blobString.split("base64,")[1]);
+
+          }).withFailureHandler(error).addImage(blobString.split("base64,")[1], imageData, imageIdBind);
         })
       })
 

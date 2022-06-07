@@ -17,16 +17,33 @@ function loadImage() {
 
   
   console.log("got here");
-  return image.getBlob().getBytes();
+  return {
+    "id": image.getObjectId(),
+    "imageProps": image.getDescription()
+  };
 }
 
 
 
 
 
-function addImage(blobImage){
-  var slide = getCurrentSlide();
-  Logger.log("creating image")
-  slide.insertImage(createImageFromBlob(blobImage));
-  Logger.log("created image")
+
+function addImage(base64String, imageProps, imageId){
+  var image;
+  let newImageBlob = convertBase64StringToBlob(base64String);
+  if(imageId == "")
+  {
+    var slide = getCurrentSlide();
+    image = slide.insertImage(newImageBlob);
+  }
+  else
+  {
+    image = findImageSlide(imageId);
+    image.replace(newImageBlob)
+  }
+
+  
+  image.setTitle("test")
+  image.setDescription("testing this out");
+  return image.getObjectId();
 }
