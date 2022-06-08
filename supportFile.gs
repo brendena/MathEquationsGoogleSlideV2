@@ -22,7 +22,7 @@ function findImageSlide(imageObjectId){
     }
   }
   if(imageSlide == undefined){throw "coudn't get image"}
-
+  
   return imageSlide;
 }
 

@@ -19,7 +19,7 @@ function loadImage() {
   console.log("got here");
   return {
     "id": image.getObjectId(),
-    "imageProps": image.getDescription()
+    "imageProps": JSON.parse(image.getDescription())
   };
 }
 
@@ -35,15 +35,14 @@ function addImage(base64String, imageProps, imageId){
   {
     var slide = getCurrentSlide();
     image = slide.insertImage(newImageBlob);
+    image.setTitle("Math Equation Generated")
   }
   else
   {
     image = findImageSlide(imageId);
     image.replace(newImageBlob)
   }
+  image.setDescription(JSON.stringify(imageProps));
 
-  
-  image.setTitle("test")
-  image.setDescription("testing this out");
   return image.getObjectId();
 }

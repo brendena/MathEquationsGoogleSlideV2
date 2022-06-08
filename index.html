@@ -11,7 +11,70 @@
     bottom:0px;
     left:0px;
     width:100vw;
+    padding:20px;
+    font-size:20px;
+    display:flex;
+    box-sizing: border-box;
   }
+  button{
+    font-size:20px;
+    flex-grow:2;
+  }
+  
+  img {
+    width:20px;
+  }
+  #helpToggleOnButton{
+    padding-left:5px;
+  }
+  .hide{
+    display:none;
+  }
+  #helpSection{
+    top:0;
+    left:0;
+    height:100vh;
+    width:100vw;
+    position:fixed;
+    z-index:10000;
+    background:white;
+    box-sizing: border-box;
+    transition: 1s;
+  }
+
+  .offScreenTran{
+    transform: translateX(100%);
+  }
+
+  #helpToggleOffButton{
+    float:right;
+    margin-right: 20px;
+  }
+  #errorMessage{
+    width:100vw;
+    position:fixed;
+    bottom:80px;
+    background:#ffc9c9;
+    padding:20px;
+    left:0px;
+    display:flex;
+    box-sizing: border-box;
+    align-items: center;
+    transition: 0.5s;
+  }
+
+  .indentText{
+      text-indent: 20px;
+  }
+  :root{
+  //these set variables inside the webcomponent
+    --math-equation-handle-display:none;
+    --math-equation-button-minimize-display:none;
+    --math-equation-button-setting-display:none;
+    --math-equation-button-github-display:none;
+    --math-equation-button-exit-display:none;
+  }
+
 
 </style>
 <body>
@@ -19,49 +82,94 @@
     <?!= include('pngConverter'); ?>
     <p>testing this out<p/>
     <math-equation-component id="mathComponent"></math-equation-component>
-    <div id="bottomNav">
-      <button id="bindImage">bind image</button>  
+
+    <div id="errorMessage" class="offScreenTran">
+      <p>
+        <span style="font-weight: bold">[Error Message]</span>
+        <span id="errorMessageText"> um has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to</span>
+      <p>
+      <div id="closeErrorMessage" style="cursor: pointer;">
+        X
+      </div>
     </div>
+    <?!= include('helpPage'); ?>
+
+    <?!= include('bottomNavBar'); ?>
+
     <script>
       /*Globals*/
       let imageIdBind = ""
       let imageBinded = false;
 
-      var error = function(error){
-        console.log("[ERROR]----------------------------")
-        console.log(error)
-        console.log("[End ERROR]----------------------------")
-      }
+      /*Global Tags*/
+      let bindButton = document.getElementById("bindImage");
+      let mathComponent = document.getElementById("mathComponent");
+      let unBindButton = document.getElementById("unBind");
+      let helpSectionToggleOnButton = document.getElementById("helpToggleOnButton");
+      let helpSectionToggleOffButton = document.getElementById("helpToggleOffButton");
+      let helpSectionUIPage = document.getElementById("helpSection");
+      let errorMessage = document.getElementById("errorMessage");
+      let errorMessageText = document.getElementById("errorMessageText");
+      let closeErrorMessage = document.getElementById("closeErrorMessage");
 
-      //Grab image from slideshow and put it into component
-
-      document.getElementById("bindImage").addEventListener("click",function(){
-        console.log("-----------------------CLicked")
-
-        
-        let button = document.getElementById("bindImage");
-        let mathComponent = document.getElementById("mathComponent");
-
-        if(!imageBinded){
-          google.script.run.withSuccessHandler(function(results){
-            console.log(results);
-            imageIdBind = results["id"]
-            
-            imageBinded = !imageBinded;
-            button.innerText = "binded";
-
-          }).withFailureHandler(error).loadImage();
-        }
-        else
-        {
-          button.innerText = "bind image";
-        }
-
-        
+  //general ui stuff
+      helpSectionToggleOnButton.addEventListener("click",function(){
+        helpSectionUIPage.classList.toggle("offScreenTran");
       })
 
+      helpSectionToggleOffButton.addEventListener("click",function(){
+        helpSectionUIPage.classList.toggle("offScreenTran");
+      });
 
-      //take component out and put it into slideshow
+      errorMessageText.addEventListener("click",function(){
+        errorMessage.classList.toggle("offScreenTran")
+      });
+      closeErrorMessage.addEventListener("click", function(){
+        errorMessage.classList.toggle("offScreenTran")
+      })
+
+      var error = function(error){
+        console.log("[ERROR]----------------------------")
+        errorMessageText.innerHTML = error;
+        errorMessage.classList.toggle("offScreenTran")
+        console.log("[End ERROR]----------------------------")
+      }
+      
+  //Grab image from slideshow and put it into component
+
+      bindButton.addEventListener("click",function(){
+        console.log("-----------------------CLicked")
+
+        google.script.run.withSuccessHandler(function(results)
+        {
+          console.log(results);
+          imageIdBind = results["id"]
+          imageBinded = true;
+
+          
+
+          let mathEquationProps = results["imageProps"];
+
+          mathComponent.mathType = mathEquationProps["mathType"];
+          mathComponent.height = mathEquationProps["height"];
+          mathComponent.color = mathEquationProps["color"];
+          mathComponent.text = mathEquationProps["text"];
+
+
+          unBindButton.classList.toggle("hide");
+          
+
+        }).withFailureHandler(error).loadImage();
+      
+      })
+
+      unBindButton.addEventListener("click",function(){
+        imageIdBind = ""
+        imageBinded = false;
+        unBindButton.classList.toggle("hide");
+      });
+
+//take component out and put it into slideshow
 
       const convert_blobToBase64String = async (blob) =>  {
           const base64url = await new Promise((r) => {
@@ -72,7 +180,7 @@
         return base64url;
       }
 
-      document.getElementById("mathComponent").addEventListener("math-equation-gen-image",function(mathData){
+      mathComponent.addEventListener("math-equation-gen-image",function(mathData){
         console.log("got a event")
         console.log(mathData.detail)
         

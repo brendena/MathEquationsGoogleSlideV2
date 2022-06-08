@@ -1,7 +1,6 @@
 function onOpen() {
   SlidesApp.getUi().createMenu('Math Equations V2')
       .addItem('Menu', 'showSidebar')
-      //.addItem('Refresh Data', 'loadDataToSpreadSheet')
       .addToUi();
    Logger.log("started");
 }
