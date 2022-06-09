@@ -59,7 +59,7 @@ function getImageProps(image){
     throw "doesn't look like this image has a math equation attached to it";
   }
 
-  newDescription["height"] = Math.round(image.getHeight());
+  newDescription["height"] = Math.round(image.getHeight()) * 2;
 
   return newDescription;
   

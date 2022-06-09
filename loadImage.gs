@@ -32,21 +32,18 @@ function loadImage() {
 function addImage(base64String, imageProps, imageId){
   let image;
   let newImageBlob = convertBase64StringToBlob(base64String);
+  var imageHeight = imageProps["height"];
   if(imageId == "")
   {
     let slide = getCurrentSlide();
     image = slide.insertImage(newImageBlob);
     
     /*scale the image down, for some reason they make them very large when first added */
-
-
-    image.scaleHeight(0.5);
-    image.scaleWidth(0.5);
   }
   else
   {
     image = findImageSlide(imageId);
-    imageProps["height"] = image.getHeight();
+    imageHeight = image.getHeight() * 2; //*2 because it's going to be divided bellow
     image.replace(newImageBlob)
   }
 
@@ -55,8 +52,8 @@ function addImage(base64String, imageProps, imageId){
   let r = w/h;
 
 
-  image.setHeight(imageProps["height"]);
-  image.setWidth(imageProps["height"] * r);
+  image.setHeight(imageHeight / 2);
+  image.setWidth(imageHeight * r / 2);
 
   image.setTitle(Image_Title)
   image.setDescription(JSON.stringify(imageProps));
