@@ -1,11 +1,11 @@
 function loadImage() {
-  var selection = SlidesApp.getActivePresentation().getSelection();
-  var selectionRange = selection.getPageElementRange();
+  let selection = SlidesApp.getActivePresentation().getSelection();
+  let selectionRange = selection.getPageElementRange();
  
   if(selectionRange == null)            
     throw "you need to select a image to reload the equation back into the text box"    
     
-  var pageElements = selectionRange.getPageElements();
+  let pageElements = selectionRange.getPageElements();
   
   if(pageElements.length <= 0)
     throw "please select a item"
@@ -13,13 +13,14 @@ function loadImage() {
     throw "can only select one item"
     
     
-  var image = pageElements[0].asImage()
+  let image = pageElements[0].asImage()
 
-  
+  let imageProps = getImageProps(image);
+
   console.log("got here");
   return {
     "id": image.getObjectId(),
-    "imageProps": JSON.parse(image.getDescription())
+    "imageProps": imageProps
   };
 }
 
@@ -29,19 +30,35 @@ function loadImage() {
 
 
 function addImage(base64String, imageProps, imageId){
-  var image;
+  let image;
   let newImageBlob = convertBase64StringToBlob(base64String);
   if(imageId == "")
   {
-    var slide = getCurrentSlide();
+    let slide = getCurrentSlide();
     image = slide.insertImage(newImageBlob);
-    image.setTitle("Math Equation Generated")
+    
+    /*scale the image down, for some reason they make them very large when first added */
+
+
+    image.scaleHeight(0.5);
+    image.scaleWidth(0.5);
   }
   else
   {
     image = findImageSlide(imageId);
+    imageProps["height"] = image.getHeight();
     image.replace(newImageBlob)
   }
+
+  let h = image.getHeight();
+  let w = image.getWidth();
+  let r = w/h;
+
+
+  image.setHeight(imageProps["height"]);
+  image.setWidth(imageProps["height"] * r);
+
+  image.setTitle(Image_Title)
   image.setDescription(JSON.stringify(imageProps));
 
   return image.getObjectId();

@@ -1,3 +1,6 @@
+const Image_Title = "Math_Equation_Generated"
+
+
 function getCurrentSlide()
 {
   return SlidesApp.getActivePresentation().getSelection().getCurrentPage();
@@ -27,27 +30,39 @@ function findImageSlide(imageObjectId){
 }
 
 
+function getImageProps(image){
+  let title = image.getTitle();
+  let description = image.getDescription();
+  var newDescription;
+  if(title == Image_Title)
+  {
+    try{
+      newDescription = JSON.parse(description);
+    }
+    catch(e){
+      throw "bad image description - " + description
+    }  
+  }
+  //old way of doing it
+  else if(title.search("MathEquation") != -1)
+  {
+    var color = description.split(",")[1];
+    var newDescription = {
+      "mathType": "LaTEX", //i never actually saved the type
+      "color": color,
+      "text": description
+    };
+    image.setTitle(Image_Title);
+    image.setDescription(JSON.stringify(newDescription));
+  }
+  else{
+    throw "doesn't look like this image has a math equation attached to it";
+  }
 
+  newDescription["height"] = Math.round(image.getHeight());
 
-
-
-
-
-
-
-
-
-/* this generates a blank image but i don't think i need this anymore */
-const transparentPNG = "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9btSKVInYQcchQdbEgKuKoVShChVArtOpgcukXNGlIUlwcBdeCgx+LVQcXZ10dXAVB8APE0clJ0UVK/F9SaBHjwXE/3t173L0D/PUyU82OcUDVLCOViAuZ7KoQfEUXguhDGKMSM/U5UUzCc3zdw8fXuxjP8j735+hVciYDfALxLNMNi3iDeHrT0jnvE0dYUVKIz4nHDLog8SPXZZffOBcc9vPMiJFOzRNHiIVCG8ttzIqGSjxFHFVUjfL9GZcVzluc1XKVNe/JXxjKaSvLXKc5hAQWsQQRAmRUUUIZFmK0aqSYSNF+3MM/6PhFcsnkKoGRYwEVqJAcP/gf/O7WzE9OuEmhOND5Ytsfw0BwF2jUbPv72LYbJ0DgGbjSWv5KHZj5JL3W0qJHQHgbuLhuafIecLkDDDzpkiE5UoCmP58H3s/om7JA/y3Qs+b21tzH6QOQpq6SN8DBITBSoOx1j3d3t/f275lmfz9A7XKTXQit4gAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+YGBxERGq0BjAsAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAoklEQVR42u3RAQ0AAAjDMMC/52ODkE7C2klKdxoLgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAgIEAEBIiBABASIgAAREAEBIiBABOR7C/vNA8XcEndjAAAAAElFTkSuQmCC"
-
-const blobTranspartentImage = Utilities.newBlob(Utilities.base64Decode(transparentPNG), MimeType.PNG);
-
-
-function addBlankImageAndWait()
-{
-    var slide = getCurrentSlide();
-    Logger.log("creating image")
-    imageId = slide.insertImage(blobTranspartentImage);
-    Logger.log("created image")
-    return imageId;
+  return newDescription;
+  
 }
+
+

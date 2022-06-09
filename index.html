@@ -40,6 +40,9 @@
     background:white;
     box-sizing: border-box;
     transition: 1s;
+    overflow: auto;
+    border: solid;
+    padding: 15px;
   }
 
   .offScreenTran{
@@ -151,10 +154,9 @@
           let mathEquationProps = results["imageProps"];
 
           mathComponent.mathType = mathEquationProps["mathType"];
-          mathComponent.height = mathEquationProps["height"];
           mathComponent.color = mathEquationProps["color"];
           mathComponent.text = mathEquationProps["text"];
-
+          mathComponent.height = mathEquationProps["height"];
 
           unBindButton.classList.toggle("hide");
           
@@ -187,7 +189,8 @@
         let imageBlob = mathData.detail.blob;
         let imageData = mathData.detail.equationProps;
 
-        
+        //deleting this deleted it in the component
+        //delete imageData["height"]; //don't need height it will be manage by the slide itself
 
         convert_blobToBase64String(imageBlob).then(function(blobString){
           console.log(blobString.split("base64,"))
