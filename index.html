@@ -125,16 +125,17 @@
       });
 
       errorMessageText.addEventListener("click",function(){
-        errorMessage.classList.toggle("offScreenTran")
+        errorMessage.classList.remove("offScreenTran")
       });
       closeErrorMessage.addEventListener("click", function(){
-        errorMessage.classList.toggle("offScreenTran")
+        errorMessage.classList.add("offScreenTran")
       })
 
       var error = function(error){
         console.log("[ERROR]----------------------------")
+        console.log(error);
         errorMessageText.innerHTML = error;
-        errorMessage.classList.toggle("offScreenTran")
+        errorMessage.classList.remove("offScreenTran")
         console.log("[End ERROR]----------------------------")
       }
       
