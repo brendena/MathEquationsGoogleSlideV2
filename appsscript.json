@@ -1,11 +1,27 @@
 {
   "timeZone": "America/New_York",
-  "dependencies": {
-  },
+  "dependencies": {},
   "oauthScopes":[
     "https://www.googleapis.com/auth/presentations",
     "https://www.googleapis.com/auth/script.container.ui"
   ],
+  "addOns": {
+    "common": {
+      "name": "Math Equations V2",
+      "logoUrl": "https://raw.githubusercontent.com/brendena/MathEquations-component/master/images/favicon-16x16.png",
+      "openLinkUrlPrefixes": [
+        "https://github.com/brendena/MathEquationsGoogleSlideV2"
+      ],
+      "universalActions": [{
+          "label": "Open google.com",
+          "openLink": "https://github.com/brendena/MathEquationsGoogleSlideV2"
+      }]
+    },
+    "gmail":{},
+    "docs":{},
+    "sheets": {},
+    "slides": {}
+  },
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"
 }
